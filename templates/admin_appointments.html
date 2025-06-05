@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý lịch hẹn - Admin - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-check"></i> Quản lý lịch hẹn</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Về Dashboard
+    </a>
+</div>
+
+<!-- Bộ lọc -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Bộ lọc và tìm kiếm</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Tìm theo tên bệnh nhân</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ search }}" placeholder="Nhập tên bệnh nhân...">
+            </div>
+            <div class="col-md-4">
+                <label for="status" class="form-label">Trạng thái</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Chờ xác nhận</option>
+                    <option value="Confirmed" {% if status_filter == 'Confirmed' %}selected{% endif %}>Đã xác nhận</option>
+                    <option value="Cancelled" {% if status_filter == 'Cancelled' %}selected{% endif %}>Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&nbsp;</label>
+                <div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                    <a href="{{ url_for('admin_appointments') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-refresh"></i> Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Danh sách lịch hẹn -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Danh sách lịch hẹn ({{ appointments|length }} kết quả)</h5>
+    </div>
+    <div class="card-body">
+        {% if appointments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Bệnh nhân</th>
+                        <th>Điện thoại</th>
+                        <th>Bác sĩ</th>
+                        <th>Chuyên khoa</th>
+                        <th>Ngày khám</th>
+                        <th>Giờ</th>
+                        <th>Triệu chứng</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.id }}</td>
+                        <td>{{ appointment.patient.full_name }}</td>
+                        <td>{{ appointment.patient.phone }}</td>
+                        <td>{{ appointment.doctor.name }}</td>
+                        <td>{{ appointment.doctor.specialty }}</td>
+                        <td>{{ appointment.appointment_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ appointment.appointment_time }}</td>
+                        <td>
+                            <div title="{{ appointment.symptoms }}" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                {{ appointment.symptoms }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if appointment.status == 'Pending' %}
+                                <span class="badge bg-warning">Chờ xác nhận</span>
+                            {% elif appointment.status == 'Confirmed' %}
+                                <span class="badge bg-success">Đã xác nhận</span>
+                            {% else %}
+                                <span class="badge bg-danger">Đã hủy</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ appointment.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if appointment.status == 'Pending' %}
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Confirmed') }}" 
+                                   class="btn btn-success btn-sm" title="Xác nhận"
+                                   onclick="return confirm('Xác nhận lịch hẹn này?')">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}" 
+                                   class="btn btn-danger btn-sm" title="Hủy"
+                                   onclick="return confirm('Hủy lịch hẹn này?')">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% elif appointment.status == 'Confirmed' %}
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Pending') }}" 
+                                   class="btn btn-warning btn-sm" title="Chuyển về chờ xác nhận">
+                                    <i class="fas fa-undo"></i>
+                                </a>
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}" 
+                                   class="btn btn-danger btn-sm" title="Hủy"
+                                   onclick="return confirm('Hủy lịch hẹn này?')">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% elif appointment.status == 'Cancelled' %}
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Pending') }}" 
+                                   class="btn btn-secondary btn-sm" title="Khôi phục">
+                                    <i class="fas fa-redo"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h5>Không tìm thấy lịch hẹn nào</h5>
+            <p class="text-muted">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

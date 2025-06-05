@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Danh sách bác sĩ - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Tìm kiếm bác sĩ</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="search" class="form-label">Tìm theo tên bác sĩ</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{ search }}" placeholder="Nhập tên bác sĩ...">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="specialty" class="form-label">Chuyên khoa</label>
+                        <select class="form-select" id="specialty" name="specialty">
+                            <option value="">Tất cả chuyên khoa</option>
+                            {% for spec in specialties %}
+                            <option value="{{ spec }}" {% if specialty_filter == spec %}selected{% endif %}>
+                                {{ spec }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-medical w-100">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% if doctors %}
+        {% for doctor in doctors %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card doctor-card h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-md fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">{{ doctor.name }}</h5>
+                    <p class="text-center text-muted">{{ doctor.specialty }}</p>
+                    <hr>
+                    <p class="mb-2">
+                        <i class="fas fa-phone text-primary"></i>
+                        <small>{{ doctor.phone }}</small>
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-envelope text-primary"></i>
+                        <small>{{ doctor.email }}</small>
+                    </p>
+                    <p class="mb-3">
+                        <i class="fas fa-award text-primary"></i>
+                        <small>{{ doctor.experience }} năm kinh nghiệm</small>
+                    </p>
+                    <div class="text-center">
+                        <a href="{{ url_for('book_appointment', doctor_id=doctor.id) }}" 
+                           class="btn btn-medical w-100">
+                            <i class="fas fa-calendar-plus"></i> Đặt lịch khám
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>Không tìm thấy bác sĩ nào</h5>
+                <p class="text-muted">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+                <a href="{{ url_for('doctors') }}" class="btn btn-outline-primary">Xem tất cả bác sĩ</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

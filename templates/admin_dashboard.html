@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+    <div>
+        <a href="{{ url_for('admin_appointments') }}" class="btn btn-primary me-2">Quản lý lịch hẹn</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger">Đăng xuất</a>
+    </div>
+</div>
+
+<!-- Thống kê -->
+<div class="row mb-4">
+    <div class="col-md-3">  
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ total_appointments }}</h4>
+                        <p class="mb-0">Tổng lịch hẹn</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ pending_appointments }}</h4>
+                        <p class="mb-0">Chờ xác nhận</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ confirmed_appointments }}</h4>
+                        <p class="mb-0">Đã xác nhận</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ cancelled_appointments }}</h4>
+                        <p class="mb-0">Đã hủy</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-times-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lịch hẹn gần đây -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Lịch hẹn gần đây</h5>
+    </div>
+    <div class="card-body">
+        {% if recent_appointments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Bệnh nhân</th>
+                        <th>Bác sĩ</th>
+                        <th>Ngày khám</th>
+                        <th>Giờ</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in recent_appointments %}
+                    <tr>
+                        <td>{{ appointment.patient.full_name }}</td>
+                        <td>{{ appointment.doctor.name }}</td>
+                        <td>{{ appointment.appointment_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ appointment.appointment_time }}</td>
+                        <td>
+                            {% if appointment.status == 'Pending' %}
+                                <span class="badge bg-warning">Chờ xác nhận</span>
+                            {% elif appointment.status == 'Confirmed' %}
+                                <span class="badge bg-success">Đã xác nhận</span>
+                            {% else %}
+                                <span class="badge bg-danger">Đã hủy</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if appointment.status == 'Pending' %}
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Confirmed') }}" 
+                                   class="btn btn-success btn-sm" title="Xác nhận">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}" 
+                                   class="btn btn-danger btn-sm" title="Hủy">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% elif appointment.status == 'Confirmed' %}
+                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}" 
+                                   class="btn btn-warning btn-sm" title="Hủy">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-3">
+            <a href="{{ url_for('admin_appointments') }}" class="btn btn-primary">Xem tất cả lịch hẹn</a>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+            <h5>Chưa có lịch hẹn nào</h5>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

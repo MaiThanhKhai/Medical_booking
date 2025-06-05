@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Đặt lịch khám - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-calendar-plus"></i> Đặt lịch khám với {{ doctor.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center">
+                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 100px; height: 100px;">
+                            <i class="fas fa-user-md fa-3x text-white"></i>
+                        </div>
+                        <h5>{{ doctor.name }}</h5>
+                        <p class="text-muted">{{ doctor.specialty }}</p>
+                        <p><i class="fas fa-award"></i> {{ doctor.experience }} năm kinh nghiệm</p>
+                    </div>
+                    <div class="col-md-8">
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="appointment_date" class="form-label">Ngày khám</label>
+                                    <input type="date" class="form-control" id="appointment_date" 
+                                           name="appointment_date" required min="{{ today }}"> 
+                                           
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="appointment_time" class="form-label">Giờ khám</label>
+                                    <select class="form-select" id="appointment_time" name="appointment_time" required>
+                                        <option value="">Chọn giờ khám</option>
+                                        <option value="08:00">08:00</option>
+                                        <option value="08:30">08:30</option>
+                                        <option value="09:00">09:00</option>
+                                        <option value="09:30">09:30</option>
+                                        <option value="10:00">10:00</option>
+                                        <option value="10:30">10:30</option>
+                                        <option value="11:00">11:00</option>
+                                        <option value="11:30">11:30</option>
+                                        <option value="14:00">14:00</option>
+                                        <option value="14:30">14:30</option>
+                                        <option value="15:00">15:00</option>
+                                        <option value="15:30">15:30</option>
+                                        <option value="16:00">16:00</option>
+                                        <option value="16:30">16:30</option>
+                                        <option value="17:00">17:00</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="symptoms" class="form-label">Triệu chứng / Lý do khám</label>
+                                <textarea class="form-control" id="symptoms" name="symptoms" rows="4" 
+                                          placeholder="Mô tả triệu chứng hoặc lý do bạn muốn khám..." required></textarea>
+                            </div>
+                            <div class="text-end">
+                                <a href="{{ url_for('doctors') }}" class="btn btn-secondary me-2">Hủy</a>
+                                <button type="submit" class="btn btn-medical">
+                                    <i class="fas fa-check"></i> Đặt lịch
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
