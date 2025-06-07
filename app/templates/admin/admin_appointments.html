@@ -5,7 +5,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="fas fa-calendar-check"></i> Quản lý lịch hẹn</h2>
-    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Về Dashboard
     </a>
 </div>
@@ -37,7 +37,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search"></i> Tìm kiếm
                     </button>
-                    <a href="{{ url_for('admin_appointments') }}" class="btn btn-outline-secondary">
+                    <a href="{{ url_for('admin.admin_appointments') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-refresh"></i> Reset
                     </a>
                 </div>
@@ -98,28 +98,28 @@
                         <td>
                             <div class="btn-group btn-group-sm">
                                 {% if appointment.status == 'Pending' %}
-                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Confirmed') }}" 
+                                <a href="{{ url_for('admin.update_appointment_status', appointment_id=appointment.id, status='Confirmed') }}"
                                    class="btn btn-success btn-sm" title="Xác nhận"
                                    onclick="return confirm('Xác nhận lịch hẹn này?')">
                                     <i class="fas fa-check"></i>
                                 </a>
-                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}" 
+                                <a href="{{ url_for('admin.update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}" 
                                    class="btn btn-danger btn-sm" title="Hủy"
                                    onclick="return confirm('Hủy lịch hẹn này?')">
                                     <i class="fas fa-times"></i>
                                 </a>
                                 {% elif appointment.status == 'Confirmed' %}
-                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Pending') }}" 
+                                <a href="{{ url_for('admin.update_appointment_status', appointment_id=appointment.id, status='Pending') }}"
                                    class="btn btn-warning btn-sm" title="Chuyển về chờ xác nhận">
                                     <i class="fas fa-undo"></i>
                                 </a>
-                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}" 
+                                <a href="{{ url_for('admin.update_appointment_status', appointment_id=appointment.id, status='Cancelled') }}"
                                    class="btn btn-danger btn-sm" title="Hủy"
                                    onclick="return confirm('Hủy lịch hẹn này?')">
                                     <i class="fas fa-times"></i>
                                 </a>
                                 {% elif appointment.status == 'Cancelled' %}
-                                <a href="{{ url_for('update_appointment_status', appointment_id=appointment.id, status='Pending') }}" 
+                                <a href="{{ url_for('admin.update_appointment_status', appointment_id=appointment.id, status='Pending') }}" 
                                    class="btn btn-secondary btn-sm" title="Khôi phục">
                                     <i class="fas fa-redo"></i>
                                 </a>
