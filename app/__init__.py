@@ -1,15 +1,19 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
+
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
     
     db.init_app(app)
-    
+    migrate.init_app(app, db)
+
     # Đăng ký Blueprints
     from app.main.routes import main_bp
     from app.auth.routes import auth_bp
@@ -21,6 +25,7 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     
+
     with app.app_context():
         db.create_all()
         
