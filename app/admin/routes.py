@@ -3,6 +3,7 @@ from app.models import User, Appointment, db
 from werkzeug.security import check_password_hash
 admin_bp = Blueprint('admin', __name__)
 
+
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -34,6 +35,7 @@ def admin_dashboard():
     
     # Lấy lịch hẹn gần đây
     recent_appointments = Appointment.query.order_by(Appointment.created_at.desc()).limit(10).all()
+
     
     return render_template('admin/admin_dashboard.html', 
                          total_appointments=total_appointments,
@@ -48,18 +50,22 @@ def admin_appointments():
     if 'admin_id' not in session:
         return redirect(url_for('admin.admin_login'))
     
-    status_filter = request.args.get('status', '')
-    search = request.args.get('search', '')
-    
+    status_filter = request.args.get('status', '').strip()
+    search = request.args.get('search', '').strip()
+
+
     query = Appointment.query
-    
+   
     if status_filter:
         query = query.filter(Appointment.status == status_filter)
     
     if search:
         query = query.join(User).filter(User.full_name.contains(search))
     
+    
     appointments = query.order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc()).all()
+    
+    
     
     return render_template('admin/admin_appointments.html', appointments=appointments, 
                          status_filter=status_filter, search=search)
