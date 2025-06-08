@@ -12,7 +12,7 @@ def register():
         password = request.form['password']
         full_name = request.form['full_name']
         phone = request.form['phone']
-        
+
         # Check if user already exists
         if User.query.filter_by(username=username).first():
             flash('Tên đăng nhập đã tồn tại!', 'error')
@@ -22,21 +22,25 @@ def register():
             flash('Email đã được sử dụng!', 'error')
             return render_template('auth/register.html')
 
-        # Create new user
         password_hash = generate_password_hash(password)
-        new_user = User(
-            username=username,
-            email=email,
-            password_hash=password_hash,
-            full_name=full_name,
-            phone=phone
-        )
-        
-        db.session.add(new_user)
-        db.session.commit()
-        
-        flash('Đăng ký thành công!', 'success')
-        return redirect(url_for('auth.login'))
+        try:
+            new_user = User(
+                username=username,
+                email=email,
+                password_hash=password_hash,
+                full_name=full_name,
+                phone=phone
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Đăng ký thành công!', 'success')
+            return redirect(url_for('auth.login'))
+        except ValueError as ve:
+            flash(str(ve), 'error')
+            return render_template('auth/register.html')
+        except Exception:
+            flash('Có lỗi xảy ra. Vui lòng thử lại.', 'error')
+            return render_template('auth/register.html')
     
     return render_template('auth/register.html')
 
